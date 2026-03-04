@@ -1,23 +1,20 @@
 import SwiftUI
+import MapKit
 
 struct HomeView: View {
     @Bindable var viewModel: AppViewModel
     @State private var appeared: Bool = false
-
-    private let worldImages: [(url: String, size: CGFloat, x: CGFloat, y: CGFloat, rotation: Double)] = [
-        ("https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400", 110, 0.12, 0.06, -6),
-        ("https://images.unsplash.com/photo-1523482580672-f109ba8cb9be?w=400", 90, 0.78, 0.03, 8),
-        ("https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?w=400", 100, 0.88, 0.14, -4),
-        ("https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=400", 85, 0.06, 0.18, 5),
-        ("https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?w=400", 95, 0.5, 0.08, -3),
-        ("https://images.unsplash.com/photo-1516483638261-f4dbaf036963?w=400", 80, 0.35, 0.19, 7),
-        ("https://images.unsplash.com/photo-1526129318478-62ed807ebdf9?w=400", 75, 0.7, 0.22, -5),
-    ]
+    @State private var mapPosition: MapCameraPosition = .region(
+        MKCoordinateRegion(
+            center: CLLocationCoordinate2D(latitude: 51.5204, longitude: -0.1050),
+            span: MKCoordinateSpan(latitudeDelta: 0.03, longitudeDelta: 0.03)
+        )
+    )
 
     var body: some View {
         ScrollView {
             VStack(spacing: 0) {
-                heroSection
+                mapHeroSection
                 contentSection
             }
             .padding(.bottom, 100)
@@ -25,10 +22,6 @@ struct HomeView: View {
         .ignoresSafeArea(edges: .top)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                Text("Drop")
-                    .font(.title2.bold())
-            }
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     viewModel.showProfileSheet = true
@@ -45,83 +38,64 @@ struct HomeView: View {
                 .presentationDragIndicator(.visible)
         }
         .onAppear {
-            withAnimation(.easeOut(duration: 1.0)) {
+            withAnimation(.easeOut(duration: 0.8)) {
                 appeared = true
             }
+            updateMapForCurrentDrop()
         }
     }
 
-    private var heroSection: some View {
-        GeometryReader { geo in
-            ZStack {
-                LinearGradient(
-                    colors: [
-                        Color(red: 0.93, green: 0.95, blue: 1.0),
-                        Color(red: 0.96, green: 0.94, blue: 0.98),
-                        .white
-                    ],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
+    private var mapHeroSection: some View {
+        ZStack(alignment: .bottom) {
+            Map(position: $mapPosition, interactionModes: []) {
+                if let drop = viewModel.currentDrop {
+                    Annotation("", coordinate: CLLocationCoordinate2D(latitude: drop.latitude, longitude: drop.longitude)) {
+                        ZStack {
+                            Circle()
+                                .fill(.blue.opacity(0.15))
+                                .frame(width: 44, height: 44)
 
-                ForEach(Array(worldImages.enumerated()), id: \.offset) { index, img in
-                    FloatingImageBubble(
-                        urlString: img.url,
-                        size: img.size,
-                        rotation: img.rotation
-                    )
-                    .position(
-                        x: geo.size.width * img.x,
-                        y: geo.size.height * img.y * 2.8
-                    )
-                    .opacity(appeared ? 1 : 0)
-                    .scaleEffect(appeared ? 1 : 0.6)
-                    .animation(
-                        .spring(response: 0.8, dampingFraction: 0.7).delay(Double(index) * 0.08),
-                        value: appeared
-                    )
+                            Circle()
+                                .fill(.blue.opacity(0.3))
+                                .frame(width: 28, height: 28)
+
+                            Circle()
+                                .fill(.blue)
+                                .frame(width: 14, height: 14)
+                                .overlay {
+                                    Circle()
+                                        .stroke(.white, lineWidth: 2.5)
+                                }
+                        }
+                    }
                 }
 
-                LinearGradient(
-                    colors: [.white.opacity(0), .white],
-                    startPoint: .init(x: 0.5, y: 0.65),
-                    endPoint: .bottom
-                )
-
-                VStack(spacing: 12) {
-                    Spacer()
-
-                    Image(systemName: "globe.americas.fill")
-                        .font(.system(size: 36))
-                        .foregroundStyle(
-                            .linearGradient(
-                                colors: [.blue, .blue.opacity(0.6)],
-                                startPoint: .top,
-                                endPoint: .bottom
-                            )
-                        )
-                        .opacity(appeared ? 1 : 0)
-                        .offset(y: appeared ? 0 : 10)
-                        .animation(.spring(response: 0.6).delay(0.3), value: appeared)
-
-                    Text("Discover the world\nbeneath your feet")
-                        .font(.title2.bold())
-                        .multilineTextAlignment(.center)
-                        .opacity(appeared ? 1 : 0)
-                        .offset(y: appeared ? 0 : 10)
-                        .animation(.spring(response: 0.6).delay(0.4), value: appeared)
-
-                    Text("\(viewModel.userProfile.totalDrops) drops collected")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .opacity(appeared ? 1 : 0)
-                        .animation(.spring(response: 0.6).delay(0.5), value: appeared)
+                ForEach(viewModel.collection) { drop in
+                    if drop.id != viewModel.currentDrop?.id {
+                        Annotation("", coordinate: CLLocationCoordinate2D(latitude: drop.latitude, longitude: drop.longitude)) {
+                            Circle()
+                                .fill(.blue.opacity(0.5))
+                                .frame(width: 8, height: 8)
+                                .overlay {
+                                    Circle()
+                                        .stroke(.white, lineWidth: 1)
+                                }
+                        }
+                    }
                 }
-                .padding(.bottom, 28)
             }
-        }
-        .frame(height: 320)
+            .mapStyle(.standard(pointsOfInterest: .excludingAll))
+            .frame(height: 300)
 
+            LinearGradient(
+                colors: [.clear, .clear, Color(.systemBackground).opacity(0.5), Color(.systemBackground)],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .frame(height: 120)
+            .allowsHitTesting(false)
+        }
+        .frame(height: 300)
     }
 
     private var contentSection: some View {
@@ -129,17 +103,17 @@ struct HomeView: View {
             statsSection
                 .opacity(appeared ? 1 : 0)
                 .offset(y: appeared ? 0 : 20)
-                .animation(.spring(response: 0.6).delay(0.5), value: appeared)
+                .animation(.spring(response: 0.6).delay(0.1), value: appeared)
 
             currentDropSection
                 .opacity(appeared ? 1 : 0)
                 .offset(y: appeared ? 0 : 20)
-                .animation(.spring(response: 0.6).delay(0.6), value: appeared)
+                .animation(.spring(response: 0.6).delay(0.2), value: appeared)
 
             collectionSection
                 .opacity(appeared ? 1 : 0)
                 .offset(y: appeared ? 0 : 20)
-                .animation(.spring(response: 0.6).delay(0.7), value: appeared)
+                .animation(.spring(response: 0.6).delay(0.3), value: appeared)
         }
         .padding(.horizontal, 16)
         .padding(.top, 8)
@@ -196,45 +170,24 @@ struct HomeView: View {
                 ForEach(viewModel.collection) { drop in
                     DropCollectionCard(drop: drop) {
                         viewModel.currentDrop = drop
+                        updateMapForCurrentDrop()
                     }
                 }
             }
         }
     }
-}
 
-struct FloatingImageBubble: View {
-    let urlString: String
-    let size: CGFloat
-    let rotation: Double
-
-    @State private var floating: Bool = false
-
-    var body: some View {
-        Color(.tertiarySystemBackground)
-            .frame(width: size, height: size)
-            .overlay {
-                AsyncImage(url: URL(string: urlString)) { phase in
-                    if let image = phase.image {
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .allowsHitTesting(false)
-                    }
-                }
+    private func updateMapForCurrentDrop() {
+        if let drop = viewModel.currentDrop {
+            withAnimation(.easeInOut(duration: 0.6)) {
+                mapPosition = .region(
+                    MKCoordinateRegion(
+                        center: CLLocationCoordinate2D(latitude: drop.latitude, longitude: drop.longitude),
+                        span: MKCoordinateSpan(latitudeDelta: 0.03, longitudeDelta: 0.03)
+                    )
+                )
             }
-            .clipShape(.rect(cornerRadius: size * 0.22))
-            .shadow(color: .black.opacity(0.08), radius: 12, x: 0, y: 6)
-            .rotationEffect(.degrees(rotation))
-            .offset(y: floating ? -6 : 6)
-            .onAppear {
-                withAnimation(
-                    .easeInOut(duration: Double.random(in: 2.8...3.6))
-                    .repeatForever(autoreverses: true)
-                ) {
-                    floating = true
-                }
-            }
+        }
     }
 }
 
@@ -271,45 +224,60 @@ struct DropHeroCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Color(.tertiarySystemBackground)
-                .frame(height: 200)
-                .overlay {
-                    if let url = drop.imageURL {
-                        AsyncImage(url: url) { phase in
-                            if let image = phase.image {
-                                image
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fill)
-                                    .allowsHitTesting(false)
-                            } else if phase.error != nil {
-                                Image(systemName: "photo")
-                                    .font(.largeTitle)
-                                    .foregroundStyle(.quaternary)
-                            } else {
-                                ProgressView()
+            ZStack(alignment: .topLeading) {
+                Color(.tertiarySystemBackground)
+                    .frame(height: 220)
+                    .overlay {
+                        if let url = drop.imageURL {
+                            AsyncImage(url: url) { phase in
+                                if let image = phase.image {
+                                    image
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                        .allowsHitTesting(false)
+                                } else if phase.error != nil {
+                                    Image(systemName: "photo")
+                                        .font(.largeTitle)
+                                        .foregroundStyle(.quaternary)
+                                } else {
+                                    ProgressView()
+                                }
                             }
                         }
                     }
-                }
-                .clipShape(.rect(cornerRadii: .init(topLeading: 20, topTrailing: 20)))
-                .overlay(alignment: .topLeading) {
-                    HStack(spacing: 4) {
-                        Image(systemName: drop.category.iconName)
-                            .font(.caption2)
-                        Text(drop.category.rawValue)
-                            .font(.caption2.weight(.medium))
+                    .clipShape(.rect(cornerRadii: .init(topLeading: 20, topTrailing: 20)))
+                    .overlay(alignment: .bottomLeading) {
+                        LinearGradient(
+                            colors: [.clear, .black.opacity(0.5)],
+                            startPoint: .center,
+                            endPoint: .bottom
+                        )
+                        .clipShape(.rect(cornerRadii: .init(topLeading: 20, topTrailing: 20)))
+                        .allowsHitTesting(false)
                     }
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 6)
-                    .background(.ultraThinMaterial)
-                    .clipShape(.capsule)
-                    .padding(12)
-                }
+                    .overlay(alignment: .bottomLeading) {
+                        VStack(alignment: .leading, spacing: 6) {
+                            HStack(spacing: 4) {
+                                Image(systemName: drop.category.iconName)
+                                    .font(.caption2)
+                                Text(drop.category.rawValue)
+                                    .font(.caption2.weight(.semibold))
+                            }
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(.ultraThinMaterial)
+                            .clipShape(.capsule)
+
+                            Text(drop.headline)
+                                .font(.title3.bold())
+                                .foregroundStyle(.white)
+                                .lineLimit(2)
+                        }
+                        .padding(14)
+                    }
+            }
 
             VStack(alignment: .leading, spacing: 8) {
-                Text(drop.headline)
-                    .font(.title3.bold())
-
                 Text(drop.body)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
