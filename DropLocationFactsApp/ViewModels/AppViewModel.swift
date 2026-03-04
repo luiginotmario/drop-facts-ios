@@ -12,10 +12,31 @@ final class AppViewModel {
     var chatInput: String = ""
     var isLoadingChat: Bool = false
     var showProfileSheet: Bool = false
+    var selectedAvatarIndex: Int = 0
+
+    static let avatarOptions: [(emoji: String, label: String)] = [
+        ("🧭", "Explorer"),
+        ("🗺️", "Navigator"),
+        ("🏔️", "Mountaineer"),
+        ("🌊", "Voyager"),
+        ("🚀", "Astronaut"),
+        ("🦊", "Fox"),
+        ("🐻", "Bear"),
+        ("🦉", "Owl"),
+        ("🐙", "Octopus"),
+        ("🦋", "Butterfly"),
+        ("🎒", "Backpacker"),
+        ("✈️", "Pilot")
+    ]
+
+    var selectedAvatar: String {
+        Self.avatarOptions[selectedAvatarIndex].emoji
+    }
 
     init() {
         isAuthenticated = UserDefaults.standard.bool(forKey: "isAuthenticated")
         hasCompletedOnboarding = UserDefaults.standard.bool(forKey: "hasCompletedOnboarding")
+        selectedAvatarIndex = UserDefaults.standard.integer(forKey: "selectedAvatarIndex")
         if isAuthenticated {
             loadSampleData()
         }
@@ -49,6 +70,11 @@ final class AppViewModel {
     func completeOnboarding() {
         hasCompletedOnboarding = true
         UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
+    }
+
+    func selectAvatar(at index: Int) {
+        selectedAvatarIndex = index
+        UserDefaults.standard.set(index, forKey: "selectedAvatarIndex")
     }
 
     func signOut() {

@@ -50,7 +50,7 @@ struct HomeView: View {
             Map(position: $mapPosition, interactionModes: []) {
                 if let drop = viewModel.currentDrop {
                     Annotation("", coordinate: CLLocationCoordinate2D(latitude: drop.latitude, longitude: drop.longitude)) {
-                        ExplorerPinView()
+                        AvatarPinView(emoji: viewModel.selectedAvatar)
                     }
                 }
 
@@ -289,107 +289,59 @@ struct DropHeroCard: View {
     }
 }
 
-struct ExplorerPinView: View {
+struct AvatarPinView: View {
+    let emoji: String
     @State private var pulsing: Bool = false
-    @State private var bouncing: Bool = false
 
     var body: some View {
-        VStack(spacing: 0) {
-            ZStack {
-                Circle()
-                    .fill(.blue.opacity(0.10))
-                    .frame(width: 70, height: 70)
-                    .scaleEffect(pulsing ? 1.5 : 1.0)
-                    .opacity(pulsing ? 0 : 0.5)
+        ZStack {
+            Circle()
+                .fill(.blue.opacity(0.10))
+                .frame(width: 60, height: 60)
+                .scaleEffect(pulsing ? 1.4 : 1.0)
+                .opacity(pulsing ? 0 : 0.4)
 
-                Circle()
-                    .fill(.blue.opacity(0.06))
-                    .frame(width: 70, height: 70)
-                    .scaleEffect(pulsing ? 1.2 : 0.8)
-                    .opacity(pulsing ? 0 : 0.3)
-
-                VStack(spacing: 0) {
-                    ZStack {
-                        Circle()
-                            .fill(
-                                LinearGradient(
-                                    colors: [Color(red: 0.3, green: 0.7, blue: 1.0), Color(red: 0.15, green: 0.45, blue: 0.95)],
-                                    startPoint: .top,
-                                    endPoint: .bottom
-                                )
-                            )
-                            .frame(width: 48, height: 48)
-                            .overlay {
-                                Circle()
-                                    .stroke(.white, lineWidth: 3)
-                            }
-                            .shadow(color: .blue.opacity(0.35), radius: 8, y: 4)
-
-                        VStack(spacing: -1) {
-                            ZStack {
-                                Circle()
-                                    .fill(Color(red: 1.0, green: 0.85, blue: 0.65))
-                                    .frame(width: 24, height: 24)
-
-                                Circle()
-                                    .fill(.white)
-                                    .frame(width: 5, height: 5)
-                                    .offset(x: -5, y: -1)
-
-                                Circle()
-                                    .fill(.white)
-                                    .frame(width: 5, height: 5)
-                                    .offset(x: 5, y: -1)
-
-                                Circle()
-                                    .fill(Color(red: 0.15, green: 0.15, blue: 0.2))
-                                    .frame(width: 3, height: 3)
-                                    .offset(x: -5, y: -1)
-
-                                Circle()
-                                    .fill(Color(red: 0.15, green: 0.15, blue: 0.2))
-                                    .frame(width: 3, height: 3)
-                                    .offset(x: 5, y: -1)
-
-                                Capsule()
-                                    .fill(Color(red: 0.15, green: 0.15, blue: 0.2))
-                                    .frame(width: 7, height: 3)
-                                    .offset(y: 4)
-                            }
-
-                            RoundedRectangle(cornerRadius: 2)
-                                .fill(Color(red: 0.3, green: 0.7, blue: 1.0))
-                                .frame(width: 8, height: 4)
-                                .offset(y: 1)
-                        }
-                        .offset(y: -2)
-                    }
-
-                    Triangle()
+            VStack(spacing: 0) {
+                ZStack {
+                    Circle()
                         .fill(
                             LinearGradient(
-                                colors: [Color(red: 0.15, green: 0.45, blue: 0.95), Color(red: 0.1, green: 0.35, blue: 0.85)],
+                                colors: [Color(red: 0.3, green: 0.7, blue: 1.0), Color(red: 0.15, green: 0.45, blue: 0.95)],
                                 startPoint: .top,
                                 endPoint: .bottom
                             )
                         )
-                        .frame(width: 16, height: 10)
+                        .frame(width: 48, height: 48)
                         .overlay {
-                            Triangle()
-                                .stroke(.white, lineWidth: 2.5)
+                            Circle()
+                                .stroke(.white, lineWidth: 3)
                         }
-                        .offset(y: -2)
-                        .shadow(color: .blue.opacity(0.3), radius: 4, y: 2)
+                        .shadow(color: .blue.opacity(0.35), radius: 8, y: 4)
+
+                    Text(emoji)
+                        .font(.system(size: 26))
                 }
-                .offset(y: bouncing ? -3 : 3)
+
+                Triangle()
+                    .fill(
+                        LinearGradient(
+                            colors: [Color(red: 0.15, green: 0.45, blue: 0.95), Color(red: 0.1, green: 0.35, blue: 0.85)],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
+                    .frame(width: 16, height: 10)
+                    .overlay {
+                        Triangle()
+                            .stroke(.white, lineWidth: 2.5)
+                    }
+                    .offset(y: -2)
+                    .shadow(color: .blue.opacity(0.3), radius: 4, y: 2)
             }
         }
         .onAppear {
             withAnimation(.easeInOut(duration: 1.8).repeatForever(autoreverses: false)) {
                 pulsing = true
-            }
-            withAnimation(.easeInOut(duration: 1.2).repeatForever(autoreverses: true)) {
-                bouncing = true
             }
         }
     }

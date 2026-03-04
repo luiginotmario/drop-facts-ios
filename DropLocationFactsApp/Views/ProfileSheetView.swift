@@ -31,20 +31,25 @@ struct ProfileSheetView: View {
                         .offset(y: appeared ? 0 : 15)
                         .animation(.spring(response: 0.5).delay(0.05), value: appeared)
 
+                    avatarPickerSection
+                        .opacity(appeared ? 1 : 0)
+                        .offset(y: appeared ? 0 : 15)
+                        .animation(.spring(response: 0.5).delay(0.12), value: appeared)
+
                     statsGrid
                         .opacity(appeared ? 1 : 0)
                         .offset(y: appeared ? 0 : 15)
-                        .animation(.spring(response: 0.5).delay(0.15), value: appeared)
+                        .animation(.spring(response: 0.5).delay(0.2), value: appeared)
 
                     achievementRow
                         .opacity(appeared ? 1 : 0)
                         .offset(y: appeared ? 0 : 15)
-                        .animation(.spring(response: 0.5).delay(0.25), value: appeared)
+                        .animation(.spring(response: 0.5).delay(0.3), value: appeared)
 
                     actionButtons
                         .opacity(appeared ? 1 : 0)
                         .offset(y: appeared ? 0 : 15)
-                        .animation(.spring(response: 0.5).delay(0.35), value: appeared)
+                        .animation(.spring(response: 0.5).delay(0.4), value: appeared)
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 16)
@@ -97,9 +102,8 @@ struct ProfileSheetView: View {
                     .fill(.ultraThinMaterial)
                     .frame(width: 88, height: 88)
 
-                Image(systemName: "person.circle.fill")
-                    .font(.system(size: 60))
-                    .foregroundStyle(.blue.opacity(0.8))
+                Text(viewModel.selectedAvatar)
+                    .font(.system(size: 48))
             }
 
             VStack(spacing: 4) {
@@ -112,6 +116,55 @@ struct ProfileSheetView: View {
             }
         }
         .padding(.top, 8)
+    }
+
+    private var avatarPickerSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Choose Your Avatar")
+                .font(.headline)
+                .padding(.leading, 4)
+
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 6), spacing: 10) {
+                ForEach(Array(AppViewModel.avatarOptions.enumerated()), id: \.offset) { index, avatar in
+                    Button {
+                        withAnimation(.spring(response: 0.3)) {
+                            viewModel.selectAvatar(at: index)
+                        }
+                    } label: {
+                        VStack(spacing: 4) {
+                            Text(avatar.emoji)
+                                .font(.system(size: 28))
+                                .frame(width: 50, height: 50)
+                                .background(
+                                    viewModel.selectedAvatarIndex == index
+                                        ? .blue.opacity(0.15)
+                                        : Color(.tertiarySystemFill)
+                                )
+                                .clipShape(Circle())
+                                .overlay {
+                                    Circle()
+                                        .stroke(
+                                            viewModel.selectedAvatarIndex == index ? .blue : .clear,
+                                            lineWidth: 2.5
+                                        )
+                                }
+
+                            Text(avatar.label)
+                                .font(.system(size: 9, weight: .medium))
+                                .foregroundStyle(
+                                    viewModel.selectedAvatarIndex == index ? .primary : .secondary
+                                )
+                                .lineLimit(1)
+                        }
+                    }
+                    .buttonStyle(.plain)
+                    .sensoryFeedback(.selection, trigger: viewModel.selectedAvatarIndex)
+                }
+            }
+            .padding(14)
+            .background(.ultraThinMaterial)
+            .clipShape(.rect(cornerRadius: 20))
+        }
     }
 
     private var statsGrid: some View {
