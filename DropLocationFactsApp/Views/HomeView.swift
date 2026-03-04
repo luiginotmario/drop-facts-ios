@@ -50,23 +50,7 @@ struct HomeView: View {
             Map(position: $mapPosition, interactionModes: []) {
                 if let drop = viewModel.currentDrop {
                     Annotation("", coordinate: CLLocationCoordinate2D(latitude: drop.latitude, longitude: drop.longitude)) {
-                        ZStack {
-                            Circle()
-                                .fill(.blue.opacity(0.15))
-                                .frame(width: 44, height: 44)
-
-                            Circle()
-                                .fill(.blue.opacity(0.3))
-                                .frame(width: 28, height: 28)
-
-                            Circle()
-                                .fill(.blue)
-                                .frame(width: 14, height: 14)
-                                .overlay {
-                                    Circle()
-                                        .stroke(.white, lineWidth: 2.5)
-                                }
-                        }
+                        ExplorerPinView()
                     }
                 }
 
@@ -74,11 +58,11 @@ struct HomeView: View {
                     if drop.id != viewModel.currentDrop?.id {
                         Annotation("", coordinate: CLLocationCoordinate2D(latitude: drop.latitude, longitude: drop.longitude)) {
                             Circle()
-                                .fill(.blue.opacity(0.5))
-                                .frame(width: 8, height: 8)
+                                .fill(.orange.opacity(0.6))
+                                .frame(width: 10, height: 10)
                                 .overlay {
                                     Circle()
-                                        .stroke(.white, lineWidth: 1)
+                                        .stroke(.white, lineWidth: 1.5)
                                 }
                         }
                     }
@@ -301,6 +285,54 @@ struct DropHeroCard: View {
             .padding(16)
             .background(Color(.secondarySystemBackground))
             .clipShape(.rect(cornerRadii: .init(bottomLeading: 20, bottomTrailing: 20)))
+        }
+    }
+}
+
+struct ExplorerPinView: View {
+    @State private var pulsing: Bool = false
+
+    var body: some View {
+        VStack(spacing: 0) {
+            ZStack {
+                Circle()
+                    .fill(.orange.opacity(0.12))
+                    .frame(width: 56, height: 56)
+                    .scaleEffect(pulsing ? 1.3 : 1.0)
+                    .opacity(pulsing ? 0 : 0.6)
+
+                Circle()
+                    .fill(
+                        LinearGradient(
+                            colors: [.orange, .red.opacity(0.8)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .frame(width: 40, height: 40)
+                    .shadow(color: .orange.opacity(0.4), radius: 6, y: 3)
+
+                Image(systemName: "figure.walk")
+                    .font(.system(size: 18, weight: .bold))
+                    .foregroundStyle(.white)
+            }
+
+            Image(systemName: "triangle.fill")
+                .font(.system(size: 10))
+                .foregroundStyle(
+                    LinearGradient(
+                        colors: [.red.opacity(0.8), .orange],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                )
+                .rotationEffect(.degrees(180))
+                .offset(y: -4)
+        }
+        .onAppear {
+            withAnimation(.easeInOut(duration: 1.8).repeatForever(autoreverses: false)) {
+                pulsing = true
+            }
         }
     }
 }
