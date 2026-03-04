@@ -14,23 +14,21 @@ final class AppViewModel {
     var showProfileSheet: Bool = false
     var selectedAvatarIndex: Int = 0
 
-    static let avatarOptions: [(emoji: String, label: String)] = [
-        ("🧭", "Explorer"),
-        ("🗺️", "Navigator"),
-        ("🏔️", "Mountaineer"),
-        ("🌊", "Voyager"),
-        ("🚀", "Astronaut"),
-        ("🦊", "Fox"),
-        ("🐻", "Bear"),
-        ("🦉", "Owl"),
-        ("🐙", "Octopus"),
-        ("🦋", "Butterfly"),
-        ("🎒", "Backpacker"),
-        ("✈️", "Pilot")
+    static let avatarOptions: [(imageURL: String, label: String)] = [
+        ("https://r2-pub.rork.com/generated-images/9889be80-59e4-4342-9a30-c732e637d1b5.png", "Astro"),
+        ("https://r2-pub.rork.com/generated-images/34fafdf4-7776-43a6-9ab7-c033ea79d032.png", "Sunny"),
+        ("https://r2-pub.rork.com/generated-images/e8dfe9bf-c653-4e88-836e-e53147168459.png", "Cupid"),
+        ("https://r2-pub.rork.com/generated-images/3373d571-feed-4591-ade4-1764b89c7c6b.png", "Brainy"),
+        ("https://r2-pub.rork.com/generated-images/f9f870c1-fffb-4791-a0cb-477a2ca9a652.png", "Blaze"),
+        ("https://r2-pub.rork.com/generated-images/fcb07363-c469-48df-ab37-248d3bbe4559.png", "Globe"),
+        ("https://r2-pub.rork.com/generated-images/f611bd6e-8ae5-4062-80a6-b8e255cf3fe4.png", "Dreamy"),
+        ("https://r2-pub.rork.com/generated-images/fcc175e7-8e07-4e6b-8189-48d856562692.png", "Pirate"),
+        ("https://r2-pub.rork.com/generated-images/393d9746-9f4d-48a6-ba76-0a113e1d15db.png", "Royal"),
+        ("https://r2-pub.rork.com/generated-images/105e41ba-3c44-4f86-8750-0ff3d9c4f303.png", "Wow")
     ]
 
-    var selectedAvatar: String {
-        Self.avatarOptions[selectedAvatarIndex].emoji
+    var selectedAvatarURL: URL? {
+        URL(string: Self.avatarOptions[selectedAvatarIndex].imageURL)
     }
 
     init() {

@@ -50,7 +50,7 @@ struct HomeView: View {
             Map(position: $mapPosition, interactionModes: []) {
                 if let drop = viewModel.currentDrop {
                     Annotation("", coordinate: CLLocationCoordinate2D(latitude: drop.latitude, longitude: drop.longitude)) {
-                        AvatarPinView(emoji: viewModel.selectedAvatar)
+                        AvatarPinView(avatarURL: viewModel.selectedAvatarURL)
                     }
                 }
 
@@ -290,53 +290,41 @@ struct DropHeroCard: View {
 }
 
 struct AvatarPinView: View {
-    let emoji: String
+    let avatarURL: URL?
     @State private var pulsing: Bool = false
 
     var body: some View {
         ZStack {
             Circle()
                 .fill(.blue.opacity(0.10))
-                .frame(width: 60, height: 60)
-                .scaleEffect(pulsing ? 1.4 : 1.0)
+                .frame(width: 70, height: 70)
+                .scaleEffect(pulsing ? 1.5 : 1.0)
                 .opacity(pulsing ? 0 : 0.4)
 
-            VStack(spacing: 0) {
-                ZStack {
-                    Circle()
-                        .fill(
-                            LinearGradient(
-                                colors: [Color(red: 0.3, green: 0.7, blue: 1.0), Color(red: 0.15, green: 0.45, blue: 0.95)],
-                                startPoint: .top,
-                                endPoint: .bottom
-                            )
-                        )
-                        .frame(width: 48, height: 48)
-                        .overlay {
-                            Circle()
-                                .stroke(.white, lineWidth: 3)
-                        }
-                        .shadow(color: .blue.opacity(0.35), radius: 8, y: 4)
-
-                    Text(emoji)
-                        .font(.system(size: 26))
-                }
-
-                Triangle()
-                    .fill(
-                        LinearGradient(
-                            colors: [Color(red: 0.15, green: 0.45, blue: 0.95), Color(red: 0.1, green: 0.35, blue: 0.85)],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                    )
-                    .frame(width: 16, height: 10)
-                    .overlay {
-                        Triangle()
-                            .stroke(.white, lineWidth: 2.5)
+            VStack(spacing: -2) {
+                AsyncImage(url: avatarURL) { phase in
+                    if let image = phase.image {
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                    } else {
+                        Circle()
+                            .fill(Color(red: 0.3, green: 0.7, blue: 1.0))
+                            .overlay {
+                                Image(systemName: "face.smiling.inverse")
+                                    .font(.system(size: 24))
+                                    .foregroundStyle(.white)
+                            }
                     }
-                    .offset(y: -2)
-                    .shadow(color: .blue.opacity(0.3), radius: 4, y: 2)
+                }
+                .frame(width: 52, height: 52)
+                .shadow(color: .black.opacity(0.25), radius: 6, y: 3)
+
+                Image(systemName: "triangle.fill")
+                    .font(.system(size: 10))
+                    .foregroundStyle(.white)
+                    .shadow(color: .black.opacity(0.2), radius: 3, y: 2)
+                    .offset(y: -4)
             }
         }
         .onAppear {
@@ -347,16 +335,6 @@ struct AvatarPinView: View {
     }
 }
 
-struct Triangle: Shape {
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        path.move(to: CGPoint(x: rect.midX, y: rect.maxY))
-        path.addLine(to: CGPoint(x: rect.minX, y: rect.minY))
-        path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY))
-        path.closeSubpath()
-        return path
-    }
-}
 
 struct DropCollectionCard: View {
     let drop: FactDrop

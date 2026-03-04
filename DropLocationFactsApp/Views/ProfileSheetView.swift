@@ -97,14 +97,23 @@ struct ProfileSheetView: View {
 
     private var profileHeader: some View {
         VStack(spacing: 14) {
-            ZStack {
-                Circle()
-                    .fill(.ultraThinMaterial)
-                    .frame(width: 88, height: 88)
-
-                Text(viewModel.selectedAvatar)
-                    .font(.system(size: 48))
+            AsyncImage(url: viewModel.selectedAvatarURL) { phase in
+                if let image = phase.image {
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                } else {
+                    Circle()
+                        .fill(.ultraThinMaterial)
+                        .frame(width: 88, height: 88)
+                        .overlay {
+                            Image(systemName: "face.smiling.inverse")
+                                .font(.system(size: 36))
+                                .foregroundStyle(.secondary)
+                        }
+                }
             }
+            .frame(width: 88, height: 88)
 
             VStack(spacing: 4) {
                 Text(viewModel.userProfile.displayName)
@@ -124,7 +133,7 @@ struct ProfileSheetView: View {
                 .font(.headline)
                 .padding(.leading, 4)
 
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 6), spacing: 10) {
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 5), spacing: 10) {
                 ForEach(Array(AppViewModel.avatarOptions.enumerated()), id: \.offset) { index, avatar in
                     Button {
                         withAnimation(.spring(response: 0.3)) {
@@ -132,22 +141,34 @@ struct ProfileSheetView: View {
                         }
                     } label: {
                         VStack(spacing: 4) {
-                            Text(avatar.emoji)
-                                .font(.system(size: 28))
-                                .frame(width: 50, height: 50)
-                                .background(
-                                    viewModel.selectedAvatarIndex == index
-                                        ? .blue.opacity(0.15)
-                                        : Color(.tertiarySystemFill)
-                                )
-                                .clipShape(Circle())
-                                .overlay {
+                            AsyncImage(url: URL(string: avatar.imageURL)) { phase in
+                                if let image = phase.image {
+                                    image
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                } else {
                                     Circle()
-                                        .stroke(
-                                            viewModel.selectedAvatarIndex == index ? .blue : .clear,
-                                            lineWidth: 2.5
-                                        )
+                                        .fill(Color(.tertiarySystemFill))
+                                        .overlay {
+                                            ProgressView()
+                                                .scaleEffect(0.6)
+                                        }
                                 }
+                            }
+                            .frame(width: 54, height: 54)
+                            .background(
+                                viewModel.selectedAvatarIndex == index
+                                    ? .blue.opacity(0.1)
+                                    : Color.clear
+                            )
+                            .clipShape(Circle())
+                            .overlay {
+                                Circle()
+                                    .stroke(
+                                        viewModel.selectedAvatarIndex == index ? .blue : .clear,
+                                        lineWidth: 2.5
+                                    )
+                            }
 
                             Text(avatar.label)
                                 .font(.system(size: 9, weight: .medium))
