@@ -294,41 +294,30 @@ struct AvatarPinView: View {
     @State private var pulsing: Bool = false
 
     var body: some View {
-        ZStack {
-            Circle()
-                .fill(.blue.opacity(0.10))
-                .frame(width: 70, height: 70)
-                .scaleEffect(pulsing ? 1.5 : 1.0)
-                .opacity(pulsing ? 0 : 0.4)
-
-            VStack(spacing: -2) {
-                AsyncImage(url: avatarURL) { phase in
-                    if let image = phase.image {
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                    } else {
-                        Circle()
-                            .fill(Color(red: 0.3, green: 0.7, blue: 1.0))
-                            .overlay {
-                                Image(systemName: "face.smiling.inverse")
-                                    .font(.system(size: 24))
-                                    .foregroundStyle(.white)
-                            }
-                    }
+        VStack(spacing: 0) {
+            AsyncImage(url: avatarURL) { phase in
+                if let image = phase.image {
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                } else {
+                    Image(systemName: "figure.walk")
+                        .font(.system(size: 30))
+                        .foregroundStyle(.blue)
                 }
-                .frame(width: 52, height: 52)
-                .shadow(color: .black.opacity(0.25), radius: 6, y: 3)
-
-                Image(systemName: "triangle.fill")
-                    .font(.system(size: 10))
-                    .foregroundStyle(.white)
-                    .shadow(color: .black.opacity(0.2), radius: 3, y: 2)
-                    .offset(y: -4)
             }
+            .frame(width: 60, height: 60)
+            .shadow(color: .black.opacity(0.3), radius: 8, y: 4)
+
+            Ellipse()
+                .fill(.black.opacity(0.15))
+                .frame(width: 30, height: 8)
+                .blur(radius: 2)
+                .scaleEffect(pulsing ? 1.3 : 1.0)
+                .opacity(pulsing ? 0.1 : 0.25)
         }
         .onAppear {
-            withAnimation(.easeInOut(duration: 1.8).repeatForever(autoreverses: false)) {
+            withAnimation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true)) {
                 pulsing = true
             }
         }

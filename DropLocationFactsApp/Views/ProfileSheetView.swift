@@ -103,17 +103,17 @@ struct ProfileSheetView: View {
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                 } else {
-                    Circle()
+                    RoundedRectangle(cornerRadius: 20)
                         .fill(.ultraThinMaterial)
-                        .frame(width: 88, height: 88)
+                        .frame(width: 100, height: 100)
                         .overlay {
-                            Image(systemName: "face.smiling.inverse")
+                            Image(systemName: "figure.walk")
                                 .font(.system(size: 36))
                                 .foregroundStyle(.secondary)
                         }
                 }
             }
-            .frame(width: 88, height: 88)
+            .frame(width: 100, height: 100)
 
             VStack(spacing: 4) {
                 Text(viewModel.userProfile.displayName)
@@ -147,7 +147,7 @@ struct ProfileSheetView: View {
                                         .resizable()
                                         .aspectRatio(contentMode: .fit)
                                 } else {
-                                    Circle()
+                                    RoundedRectangle(cornerRadius: 12)
                                         .fill(Color(.tertiarySystemFill))
                                         .overlay {
                                             ProgressView()
@@ -156,14 +156,15 @@ struct ProfileSheetView: View {
                                 }
                             }
                             .frame(width: 54, height: 54)
+                            .padding(4)
                             .background(
                                 viewModel.selectedAvatarIndex == index
                                     ? .blue.opacity(0.1)
                                     : Color.clear
                             )
-                            .clipShape(Circle())
+                            .clipShape(.rect(cornerRadius: 14))
                             .overlay {
-                                Circle()
+                                RoundedRectangle(cornerRadius: 14)
                                     .stroke(
                                         viewModel.selectedAvatarIndex == index ? .blue : .clear,
                                         lineWidth: 2.5

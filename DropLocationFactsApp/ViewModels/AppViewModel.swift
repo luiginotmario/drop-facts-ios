@@ -15,16 +15,16 @@ final class AppViewModel {
     var selectedAvatarIndex: Int = 0
 
     static let avatarOptions: [(imageURL: String, label: String)] = [
-        ("https://r2-pub.rork.com/generated-images/9889be80-59e4-4342-9a30-c732e637d1b5.png", "Astro"),
-        ("https://r2-pub.rork.com/generated-images/34fafdf4-7776-43a6-9ab7-c033ea79d032.png", "Sunny"),
-        ("https://r2-pub.rork.com/generated-images/e8dfe9bf-c653-4e88-836e-e53147168459.png", "Cupid"),
-        ("https://r2-pub.rork.com/generated-images/3373d571-feed-4591-ade4-1764b89c7c6b.png", "Brainy"),
-        ("https://r2-pub.rork.com/generated-images/f9f870c1-fffb-4791-a0cb-477a2ca9a652.png", "Blaze"),
-        ("https://r2-pub.rork.com/generated-images/fcb07363-c469-48df-ab37-248d3bbe4559.png", "Globe"),
-        ("https://r2-pub.rork.com/generated-images/f611bd6e-8ae5-4062-80a6-b8e255cf3fe4.png", "Dreamy"),
-        ("https://r2-pub.rork.com/generated-images/fcc175e7-8e07-4e6b-8189-48d856562692.png", "Pirate"),
-        ("https://r2-pub.rork.com/generated-images/393d9746-9f4d-48a6-ba76-0a113e1d15db.png", "Royal"),
-        ("https://r2-pub.rork.com/generated-images/105e41ba-3c44-4f86-8750-0ff3d9c4f303.png", "Wow")
+        ("https://r2-pub.rork.com/generated-images/6482169a-fd20-4f02-ab12-c572b02b3b64.png", "Safari"),
+        ("https://r2-pub.rork.com/generated-images/23c491c5-fabb-4f4d-98bd-e46aaf417a5e.png", "Scout"),
+        ("https://r2-pub.rork.com/generated-images/b12b9120-95eb-497d-baa0-2bc46fa52776.png", "Diver"),
+        ("https://r2-pub.rork.com/generated-images/08ec238f-c8dd-4e33-8de3-7193670e5669.png", "Astro"),
+        ("https://r2-pub.rork.com/generated-images/172b2d2a-85a1-4863-a60d-ad8034e3edbe.png", "Frost"),
+        ("https://r2-pub.rork.com/generated-images/56d6dfc2-f619-432b-8e40-bc5bba8bb52f.png", "Jungle"),
+        ("https://r2-pub.rork.com/generated-images/bf2d933c-0e17-4a79-a236-878872500f27.png", "Pirate"),
+        ("https://r2-pub.rork.com/generated-images/7c1a5118-70c8-4a38-b2f1-91011c51882a.png", "Summit"),
+        ("https://r2-pub.rork.com/generated-images/549e2bda-32a0-4d64-b64f-20fbe5368d25.png", "Desert"),
+        ("https://r2-pub.rork.com/generated-images/22275d90-abd7-442b-90bd-901ace43ef97.png", "Relic")
     ]
 
     var selectedAvatarURL: URL? {
