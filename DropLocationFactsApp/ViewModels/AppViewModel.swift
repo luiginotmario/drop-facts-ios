@@ -39,6 +39,13 @@ final class AppViewModel {
         }
     }
 
+    func continueAsGuest() {
+        userProfile.displayName = "Explorer"
+        isAuthenticated = true
+        UserDefaults.standard.set(true, forKey: "isAuthenticated")
+        loadSampleData()
+    }
+
     func completeOnboarding() {
         hasCompletedOnboarding = true
         UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
